@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">EventPlanner</string>
+    <string name="text_plan">Plan</string>
+    <string name="text_calendar">Calendar</string>
+    <string name="action_add">add</string>
+    <string name="action_save">save</string>
+    <string name="action_ascend">sort ascend</string>
+    <string name="action_descend">sort descend</string>
+
+    <string name="tips_confirm_delete_title">Delete</string>
+    <string name="tips_confirm_delete_plan">Delete this plan?</string>
+    <string name="tips_confirm_delete_attendee">Delete this attendee?</string>
+    <string name="tips_confirm_ok">OK</string>
+    <string name="tips_confirm_cancel">Cancel</string>
+
+    <string name="tips_confirm_accept_title">You receive a new plan</string>
+    <string name="tips_confirm_accept_plan">Do you accept?</string>
+    <string name="tips_confirm_accept_ok">Accept</string>
+    <string name="tips_confirm_accept_cancel">Decline</string>
+
+    <string name="tips_confirm_info_detail">Detail</string>
+    <string name="tips_confirm_info_delete">Delete</string>
+
+    <string name="error_wrong_time">End time should larger than start time</string>
+    <string name="error_empty_time">Time should not be empty</string>
+    <string name="error_empty_title">Title should not be empty</string>
+
+    <string name="plan_title">Title</string>
+    <string name="plan_venue">Venue</string>
+    <string name="plan_location">Location</string>
+    <string name="plan_start_time">Start Time</string>
+    <string name="plan_end_time">End Time</string>
+    <string name="plan_attendee">Attendees</string>
+    <string name="plan_note">Note</string>
+    <string name="plan_voice">Voice Record</string>
+    <string name="plan_voice_play">Play</string>
+    <string name="plan_voice_record">Record</string>
+
+    <string name="plan_voice_playing">Playing</string>
+    <string name="plan_voice_recording">Recording</string>
+
+    <string name="hint_time">click to choose time</string>
+</resources>
