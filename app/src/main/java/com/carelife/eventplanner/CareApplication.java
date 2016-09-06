@@ -1,6 +1,7 @@
 package com.carelife.eventplanner;
 
 import com.orm.SugarApp;
+
 /**
  * Created by carelife on 2016/8/20.
  */
