@@ -41,7 +41,7 @@ public class PlanDetailActivity extends ActionBarActivity {
     private Plan plan;
     private EditText editTitle;
     private EditText editVenue;
-    private EditText editLocation;
+    private TextView editLocation;
     private TextView editStartTime;
     private TextView editEndTime;
     private EditText editNote;
@@ -71,7 +71,7 @@ public class PlanDetailActivity extends ActionBarActivity {
 
         editTitle = (EditText) findViewById(R.id.plan_edit1);
         editVenue = (EditText) findViewById(R.id.plan_edit2);
-        editLocation = (EditText) findViewById(R.id.plan_edit3);
+        editLocation = (TextView) findViewById(R.id.plan_edit3);
         editStartTime = (TextView) findViewById(R.id.plan_edit4);
         editEndTime = (TextView) findViewById(R.id.plan_edit5);
         editNote = (EditText) findViewById(R.id.plan_edit6);
@@ -135,6 +135,13 @@ public class PlanDetailActivity extends ActionBarActivity {
                 dpd.show();
             }
         });
+        editLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PlanDetailActivity.this, MapsActivity.class);
+                startActivity(intent);
+            }
+        });
 
         Button addAttendee = (Button) findViewById(R.id.btn_add_attendee);
         addAttendee.setOnClickListener(new View.OnClickListener() {
@@ -156,7 +163,7 @@ public class PlanDetailActivity extends ActionBarActivity {
                     btnRecord.setText(getResources().getString(R.string.plan_voice_record));
                     btnPlay.setClickable(true);
                 } else {
-                    String path = voiceController.startRecord();
+                    String path = voiceController.startRecord(PlanDetailActivity.this);
                     plan.setRecordPath(path);
                     btnRecord.setText(getResources().getString(R.string.plan_voice_recording));
                     btnPlay.setClickable(false);

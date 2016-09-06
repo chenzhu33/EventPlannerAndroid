@@ -1,13 +1,14 @@
 package com.carelife.eventplanner.controller;
 
-import android.media.MediaPlayer;
-import android.media.MediaRecorder;
-import android.os.Environment;
+import java.io.File;
+import java.io.IOException;
 
 import com.carelife.eventplanner.utils.StringUtil;
 
-import java.io.File;
-import java.io.IOException;
+import android.content.Context;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
+import android.os.Environment;
 
 /**
  * Created by carelife on 2016/8/13.
@@ -28,18 +29,11 @@ public class VoiceController {
     }
 
     private VoiceController() {
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath()+FILE_PATH;
-        File file = new File(path);
-        if(file.isFile()) {
-            file.delete();
-        }
-        if(!file.exists()) {
-            file.mkdirs();
-        }
+
     }
 
-    public String startRecord() {
-        String filePath = generateFilePath();
+    public String startRecord(Context context) {
+        String filePath = generateFilePath(context);
         mRecorder = new MediaRecorder();
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -85,9 +79,14 @@ public class VoiceController {
         }
     }
 
-    public String generateFilePath() {
+    public String generateFilePath(Context context) {
         String fileName = StringUtil.getRandomString(10)+".3gp";
-        return Environment.getExternalStorageDirectory().getAbsolutePath()+FILE_PATH+fileName;
+        String path = context.getExternalCacheDir().getAbsolutePath() + FILE_PATH;
+        File file = new File(path);
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        return path + fileName;
     }
 
 }
