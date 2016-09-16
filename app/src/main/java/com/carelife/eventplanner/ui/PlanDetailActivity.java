@@ -139,7 +139,15 @@ public class PlanDetailActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(PlanDetailActivity.this, MapsActivity.class);
-                startActivity(intent);
+                String[] coordinates = editLocation.getText().toString().split(",");
+                if(coordinates.length == 0) {
+                    return;
+                }
+                intent.putExtra("lat",31.05);
+                intent.putExtra("lon",121.76);
+                //intent.putExtra("lat",coordinates[0]);
+                //intent.putExtra("lon",coordinates[1]);
+                startActivityForResult(intent, 2);
             }
         });
 
@@ -147,8 +155,8 @@ public class PlanDetailActivity extends ActionBarActivity {
         addAttendee.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(PlanDetailActivity.this, ContactsActivity.class);
-                startActivityForResult(i, 1);
+                Intent intent = new Intent(PlanDetailActivity.this, ContactsActivity.class);
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -370,6 +378,10 @@ public class PlanDetailActivity extends ActionBarActivity {
                 plan.convertToString();
                 attendeeAdapter.notifyDataSetChanged();
             }
+        } else if(requestCode == 2 && resultCode == RESULT_OK) {
+            double lat = data.getDoubleExtra("lat",0);
+            double lon = data.getDoubleExtra("lon",0);
+            editLocation.setText(lat+","+lon);
         }
     }
 

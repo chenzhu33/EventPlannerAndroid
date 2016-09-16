@@ -1,19 +1,26 @@
 package com.carelife.eventplanner.service;
 
 import com.carelife.eventplanner.R;
+import com.carelife.eventplanner.dom.Plan;
 import com.carelife.eventplanner.ui.MainActivity;
+import com.carelife.eventplanner.utils.MapUtil;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import java.util.List;
 
@@ -40,23 +47,24 @@ public class LocationPollingService extends Service {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         //获取所有可用的位置提供器
         List<String> providers = locationManager.getProviders(true);
-        if(providers.contains(LocationManager.GPS_PROVIDER)){
+        if (providers.contains(LocationManager.GPS_PROVIDER)) {
             //如果是GPS
             locationProvider = LocationManager.GPS_PROVIDER;
-        }else if(providers.contains(LocationManager.NETWORK_PROVIDER)){
+        } else if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
             //如果是Network
             locationProvider = LocationManager.NETWORK_PROVIDER;
-        }else{
-            return ;
+        } else {
+            return;
         }
-
         //监视地理位置变化
-        locationManager.requestLocationUpdates(locationProvider, 3000, 1, locationListener);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.requestLocationUpdates(locationProvider, 5000, 0, locationListener);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flag, int startId) {
-        new PollingThread().start();
         return super.onStartCommand(intent, flag, startId);
     }
 
@@ -84,7 +92,12 @@ public class LocationPollingService extends Service {
 
         @Override
         public void onLocationChanged(Location location) {
-
+            String start = location.getLatitude()+","+location.getLongitude();
+            List<Plan> planList = Plan.listAll(Plan.class);
+            for(Plan plan : planList) {
+                String dest = plan.getLocation();
+                new DirectionTask().execute(start, dest);
+            }
         }
     };
 
@@ -106,28 +119,22 @@ public class LocationPollingService extends Service {
         mManager.notify(0, mNotification);
     }
 
-    /**
-     * Polling thread
-     * 模拟向Server轮询的异步线程
-     */
-    int count = 0;
-    class PollingThread extends Thread {
-        @Override
-        public void run() {
-            System.out.println("Polling...");
-            count ++;
-            //当计数能被5整除时弹出通知
-            if (count % 5 == 0) {
-                showNotification();
-                System.out.println("New message!");
-            }
-        }
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         System.out.println("Service:onDestroy");
     }
 
+    private class DirectionTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            return MapUtil.getInstance().getRoutes(params[0], params[1], "driving", "false");
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            showNotification();
+        }
+    }
 }

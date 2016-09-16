@@ -1,11 +1,20 @@
 package com.carelife.eventplanner.ui;
 
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,9 +22,14 @@ import android.widget.TextView;
 
 
 import com.carelife.eventplanner.R;
+import com.carelife.eventplanner.service.LocationPollingService;
 
 import java.util.ArrayList;
 
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.RuntimePermissions;
+
+@RuntimePermissions
 public class MainActivity extends ActionBarActivity {
     final ArrayList<Fragment> fragmentList = new ArrayList<>();
 
@@ -42,8 +56,41 @@ public class MainActivity extends ActionBarActivity {
         pager.setCurrentItem(0);
         pager.setOnPageChangeListener(new MyOnPageChangeListener());
         pager.setOffscreenPageLimit(1);
+
+        MainActivityPermissionsDispatcher.checkPermissionWithCheck(MainActivity.this);
+
+
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // NOTE: delegate the permission handling to generated method
+        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
+    }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.ACCESS_FINE_LOCATION})
+    public void checkPermission() {
+        Intent startIntent = new Intent(this, LocationPollingService.class);
+        startIntent.setAction("LocationPollingService");
+        bindService(startIntent, new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Log.e("Y","connected");
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+
+            }
+        }, Service.BIND_AUTO_CREATE);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
