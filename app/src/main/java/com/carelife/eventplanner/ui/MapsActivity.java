@@ -1,17 +1,8 @@
 package com.carelife.eventplanner.ui;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -25,12 +16,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.List;
-
+/**
+ * 添加,google map显示的activity
+ */
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private Button saveButton;
     private double lat;
     private double lon;
     private Marker previousMarker;
@@ -47,7 +38,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         lat = getIntent().getDoubleExtra("lat",0);
         lon = getIntent().getDoubleExtra("lon",0);
 
-        saveButton = (Button) findViewById(R.id.save_coord);
+        Button saveButton = (Button) findViewById(R.id.save_coord);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

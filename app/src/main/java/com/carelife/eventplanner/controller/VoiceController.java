@@ -8,7 +8,6 @@ import com.carelife.eventplanner.utils.StringUtil;
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.os.Environment;
 
 /**
  * Created by carelife on 2016/8/13.
@@ -51,7 +50,7 @@ public class VoiceController {
     public void stopRecord() {
         if(mRecorder != null) {
             mRecorder.stop();
-            //mRecorder.release();
+            mRecorder.release();
             mRecorder = null;
         }
     }
@@ -74,7 +73,7 @@ public class VoiceController {
     public void stopPlay() {
         if(mPlayer != null) {
             mPlayer.stop();
-            //mPlayer.release();
+            mPlayer.release();
             mPlayer = null;
         }
     }

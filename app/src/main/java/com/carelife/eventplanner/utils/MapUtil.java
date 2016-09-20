@@ -1,9 +1,7 @@
 package com.carelife.eventplanner.utils;
 
 /**
- *
- *
- * Created by chenzhuwei on 16/9/15.
+ * 添加: 地图相关工具
  */
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,12 +17,12 @@ public class MapUtil {
      * 单例模式
      *
      */
-    synchronized public static MapUtil getInstance() {
+    public static MapUtil getInstance() {
         return mapsApiUtils;
     }
 
     /**
-     * 根据API地址和参数获取响应对象HttpResponse
+     * 网络下载,根据API地址和参数获取响应对象HttpResponse
      *
      */
     private String post(String url) {
@@ -61,7 +59,7 @@ public class MapUtil {
                     httpURLConnection.getInputStream()));
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                responseResult.append("/n").append(line);
+                responseResult.append(line);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,52 +83,17 @@ public class MapUtil {
     }
 
     /**
-     * 得到JSON值
-     *
-     * @param url
-     * @return
-     */
-    private String getValues(String url) {
-        String token = "";
-        String response = post(url);
-        return response;
-    }
-
-    /**
-     * 根据google API 获取两地的路線
+     * 根据google API 获取两地的时间
      *
      * @param origin      起點
      * @param destination 終點
      * @param mode        出行方式 driving駕車，  walking步行， bicycling自行車, transit公交車
-     * @param sensor      是否来自装有位置传感器的设备  true Or false
      * @return
      */
-    public String getRoutes(String origin, String destination, String mode, String sensor) {
-        String url = "http://maps.googleapis.com/maps/api/directions/json?origin=" + origin + "&" +
-                "destination=" + destination + "&sensor=" + sensor + "&mode=" + mode + "&region=zh";
-        return getValues(url);
+    public String getTimes(String origin, String destination, String mode) {
+        String url = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=" + origin + "&" +
+                "destinations=" + destination + "&mode=" + mode + "&key=AIzaSyBVD0DilU1xTzRi1D7-wKBVUhiksnEV8hc";
+        return post(url);
     }
 
-    /**
-     * 根据經緯度 获取地理位置
-     * LatLng 經緯度以逗號隔開  緯度,經度
-     *
-     * @return
-     */
-    public String getAddress(String latlng) {
-        String url = "http://maps.google.com/maps/api/geocode/json?latlng=" +
-                latlng + "&language=zh-CN&sensor=false";
-        return getValues(url);
-    }
-
-    /**
-     * 根據地址獲取經緯度
-     *
-     * @return
-     */
-    public String getLatlng(String str) {
-        String url = "http://maps.google.com/maps/api/geocode/json?address=" +
-                str + "&language=zh-CN&sensor=false";
-        return getValues(url);
-    }
 }

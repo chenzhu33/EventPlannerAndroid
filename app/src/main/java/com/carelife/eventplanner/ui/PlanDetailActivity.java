@@ -36,6 +36,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * 修改: location选择改为从地图上选择点,这个功能是额外功能,作业里没要求
+ */
 public class PlanDetailActivity extends ActionBarActivity {
 
     private Plan plan;

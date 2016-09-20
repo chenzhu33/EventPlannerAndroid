@@ -20,7 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-
 import com.carelife.eventplanner.R;
 import com.carelife.eventplanner.service.LocationPollingService;
 
@@ -29,6 +28,11 @@ import java.util.ArrayList;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
+/**
+ * 修改
+ * 1. 添加api23+的机器的动态权限检查
+ * 2. 绑定location service
+ */
 @RuntimePermissions
 public class MainActivity extends ActionBarActivity {
     final ArrayList<Fragment> fragmentList = new ArrayList<>();
@@ -38,6 +42,19 @@ public class MainActivity extends ActionBarActivity {
     private TextView textBar1;
     private TextView textBar2;
     private ViewPager pager;
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.e("Y", "connected");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.e("N", "disconnected");
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +76,6 @@ public class MainActivity extends ActionBarActivity {
 
         MainActivityPermissionsDispatcher.checkPermissionWithCheck(MainActivity.this);
 
-
     }
 
     @Override
@@ -78,18 +94,8 @@ public class MainActivity extends ActionBarActivity {
             Manifest.permission.ACCESS_FINE_LOCATION})
     public void checkPermission() {
         Intent startIntent = new Intent(this, LocationPollingService.class);
-        startIntent.setAction("LocationPollingService");
-        bindService(startIntent, new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                Log.e("Y","connected");
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-
-            }
-        }, Service.BIND_AUTO_CREATE);
+        boolean success = bindService(startIntent, serviceConnection, Service.BIND_AUTO_CREATE);
+        Log.e("bind", success + "");
     }
 
     @Override
@@ -157,6 +163,12 @@ public class MainActivity extends ActionBarActivity {
                 calendarFragment.notifyChange();
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(serviceConnection);
     }
 
     public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
