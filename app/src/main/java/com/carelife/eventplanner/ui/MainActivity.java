@@ -25,15 +25,10 @@ import com.carelife.eventplanner.service.LocationPollingService;
 
 import java.util.ArrayList;
 
-import permissions.dispatcher.NeedsPermission;
-import permissions.dispatcher.RuntimePermissions;
-
 /**
  * 修改
- * 1. 添加api23+的机器的动态权限检查
  * 2. 绑定location service
  */
-@RuntimePermissions
 public class MainActivity extends ActionBarActivity {
     final ArrayList<Fragment> fragmentList = new ArrayList<>();
 
@@ -74,25 +69,11 @@ public class MainActivity extends ActionBarActivity {
         pager.setOnPageChangeListener(new MyOnPageChangeListener());
         pager.setOffscreenPageLimit(1);
 
-        MainActivityPermissionsDispatcher.checkPermissionWithCheck(MainActivity.this);
+        bindService();
 
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // NOTE: delegate the permission handling to generated method
-        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
-    }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    @NeedsPermission({Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.ACCESS_FINE_LOCATION})
-    public void checkPermission() {
+    public void bindService() {
         Intent startIntent = new Intent(this, LocationPollingService.class);
         boolean success = bindService(startIntent, serviceConnection, Service.BIND_AUTO_CREATE);
         Log.e("bind", success + "");

@@ -1,9 +1,9 @@
 package com.carelife.eventplanner.dom;
 
+import android.database.Cursor;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.orm.SugarRecord;
-import com.orm.dsl.Ignore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +11,8 @@ import java.util.List;
 /**
  * Created by carelife on 2016/8/11.
  */
-public class Plan extends SugarRecord<Plan> {
-    public String planId;
+public class Plan {
+    public long _id;
     public String title;
     public long startDate;
     public long endDate;
@@ -22,11 +22,18 @@ public class Plan extends SugarRecord<Plan> {
     public String attendString;
     public String recordPath;
 
-    @Ignore
     public List<Contact> attendees;
 
     public Plan() {
 
+    }
+
+    public long get_id() {
+        return _id;
+    }
+
+    public void set_id(long _id) {
+        this._id = _id;
     }
 
     public List<Contact> getAttendees() {
@@ -63,14 +70,6 @@ public class Plan extends SugarRecord<Plan> {
 
     public void setEndDate(long endDate) {
         this.endDate = endDate;
-    }
-
-    public void setPlanId(String planId) {
-        this.planId = planId;
-    }
-
-    public String getPlanId() {
-        return planId;
     }
 
     public void setLocation(String location) {
@@ -125,5 +124,19 @@ public class Plan extends SugarRecord<Plan> {
                 attendees = new ArrayList<>();
             }
         }
+    }
+
+    public static Plan fromCursor(Cursor cursor) {
+        Plan plan = new Plan();
+        plan._id = cursor.getLong(cursor.getColumnIndex("_id"));
+        plan.title = cursor.getString(cursor.getColumnIndex("title"));
+        plan.startDate = cursor.getLong(cursor.getColumnIndex("startDate"));
+        plan.endDate = cursor.getLong(cursor.getColumnIndex("endDate"));
+        plan.location = cursor.getString(cursor.getColumnIndex("location"));
+        plan.venue = cursor.getString(cursor.getColumnIndex("venue"));
+        plan.note = cursor.getString(cursor.getColumnIndex("note"));
+        plan.attendString = cursor.getString(cursor.getColumnIndex("attendString"));
+        plan.recordPath = cursor.getString(cursor.getColumnIndex("recordPath"));
+        return plan;
     }
 }

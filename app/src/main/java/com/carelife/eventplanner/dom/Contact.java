@@ -1,11 +1,9 @@
 package com.carelife.eventplanner.dom;
 
-import com.orm.SugarRecord;
-
 /**
  * Created by carelife on 2016/8/11.
  */
-public class Contact extends SugarRecord<Contact> {
+public class Contact {
     public String name;
     public String phoneNum;
 

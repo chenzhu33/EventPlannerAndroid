@@ -1,7 +1,13 @@
 package com.carelife.eventplanner.ui;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +21,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.List;
 
 /**
  * 添加,google map显示的activity
@@ -37,7 +45,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.setMenuVisibility(true);
         lat = getIntent().getDoubleExtra("lat",0);
         lon = getIntent().getDoubleExtra("lon",0);
-
+        if(lat == 0 || lon == 0) {
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            List<String> providers = locationManager.getProviders(true);
+            String locationProvider = "";
+            if (providers.contains(LocationManager.GPS_PROVIDER)) {
+                //如果是GPS
+                locationProvider = LocationManager.GPS_PROVIDER;
+            }
+            if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
+                //如果是Network
+                locationProvider = LocationManager.NETWORK_PROVIDER;
+            }
+            if (locationProvider.isEmpty()) {
+                return;
+            }
+            Location location = locationManager.getLastKnownLocation(locationProvider);
+            if(location != null) {
+                lon = location.getLongitude();
+                lat = location.getLatitude();
+            }
+        }
         Button saveButton = (Button) findViewById(R.id.save_coord);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override

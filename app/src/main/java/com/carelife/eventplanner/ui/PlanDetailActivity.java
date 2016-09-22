@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.carelife.eventplanner.R;
 import com.carelife.eventplanner.controller.VoiceController;
+import com.carelife.eventplanner.db.DatabaseHelper;
 import com.carelife.eventplanner.dom.Contact;
 import com.carelife.eventplanner.dom.Plan;
 import com.carelife.eventplanner.utils.TimeUtil;
@@ -86,14 +87,15 @@ public class PlanDetailActivity extends ActionBarActivity {
                 attendeeAlertDialog = new AlertDialog.Builder(PlanDetailActivity.this).
                         setTitle(getResources().getString(R.string.tips_confirm_delete_title)).
                         setMessage(getResources().getString(R.string.tips_confirm_delete_attendee)).
-                        setIcon(R.drawable.ic_launcher).
+                        setIcon(R.mipmap.ic_launcher).
                         setPositiveButton(getResources().getString(R.string.tips_confirm_ok), new DialogInterface.OnClickListener() {
 
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 plan.attendees.remove(position);
                                 plan.convertToString();
-                                plan.save();
+                                DatabaseHelper.getInstance(PlanDetailActivity.this).insertOrUpdate(plan);
+
                                 attendeeAdapter.notifyDataSetChanged();
                                 attendeeAlertDialog.dismiss();
                             }
@@ -143,13 +145,10 @@ public class PlanDetailActivity extends ActionBarActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(PlanDetailActivity.this, MapsActivity.class);
                 String[] coordinates = editLocation.getText().toString().split(",");
-                if(coordinates.length == 0) {
-                    return;
+                if(coordinates.length == 2) {
+                    intent.putExtra("lat",coordinates[0]);
+                    intent.putExtra("lon",coordinates[1]);
                 }
-                intent.putExtra("lat",31.05);
-                intent.putExtra("lon",121.76);
-                //intent.putExtra("lat",coordinates[0]);
-                //intent.putExtra("lon",coordinates[1]);
                 startActivityForResult(intent, 2);
             }
         });
@@ -210,31 +209,32 @@ public class PlanDetailActivity extends ActionBarActivity {
     @Override
     public void onResume() {
         super.onResume();
+        if(plan == null) {
 
-        long id = -2L;
-        if (getIntent() != null) {
-            id = getIntent().getLongExtra("PlanId", -2L);
-        }
-        if (id >= 0) {
-            plan = Plan.findById(Plan.class, id);
-            plan.convertToList();
-            editTitle.setText(plan.title);
-            editVenue.setText(plan.venue);
-            editLocation.setText(plan.location);
-            editStartTime.setText(TimeUtil.toDate(plan.startDate));
-            editEndTime.setText(TimeUtil.toDate(plan.endDate));
-            editNote.setText(plan.note);
-            if (plan.getRecordPath() == null || plan.getRecordPath().isEmpty()) {
-                btnPlay.setClickable(false);
+            long id = -2L;
+            if (getIntent() != null) {
+                id = getIntent().getLongExtra("PlanId", -2L);
             }
-        } else if (id == -1) {
-            plan = new Plan();
-            plan.attendees = new ArrayList<>();
-        } else {
-            finish();
-            return;
+            if (id >= 0) {
+                plan = DatabaseHelper.getInstance(this).getById(id);
+                plan.convertToList();
+                editTitle.setText(plan.title);
+                editVenue.setText(plan.venue);
+                editLocation.setText(plan.location);
+                editStartTime.setText(TimeUtil.toDate(plan.startDate));
+                editEndTime.setText(TimeUtil.toDate(plan.endDate));
+                editNote.setText(plan.note);
+                if (plan.getRecordPath() == null || plan.getRecordPath().isEmpty()) {
+                    btnPlay.setClickable(false);
+                }
+            } else if (id == -1) {
+                plan = new Plan();
+                plan.attendees = new ArrayList<>();
+            } else {
+                finish();
+                return;
+            }
         }
-
         attendeeAdapter = new AttendeeAdapter(this, plan.attendees);
 
         attendeeListView.setAdapter(attendeeAdapter);
@@ -277,7 +277,7 @@ public class PlanDetailActivity extends ActionBarActivity {
             plan.note = editNote.getText().toString();
             plan.startDate = startTimeStamp;
             plan.endDate = endTimeStamp;
-            plan.save();
+            DatabaseHelper.getInstance(PlanDetailActivity.this).insertOrUpdate(plan);
             finish();
             if(plan.attendees.isEmpty()) {
                 return true;

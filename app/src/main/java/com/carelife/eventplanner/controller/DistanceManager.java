@@ -9,6 +9,7 @@ import android.location.Location;
 
 import com.carelife.eventplanner.Global;
 import com.carelife.eventplanner.R;
+import com.carelife.eventplanner.db.DatabaseHelper;
 import com.carelife.eventplanner.dom.Plan;
 import com.carelife.eventplanner.service.DirectionTask;
 import com.carelife.eventplanner.ui.MainActivity;
@@ -45,7 +46,7 @@ public class DistanceManager {
 
     public void requestDistance(Location currentLocation) {
         String start = currentLocation.getLatitude() + "," + currentLocation.getLongitude();
-        List<Plan> planList = Plan.listAll(Plan.class);
+        List<Plan> planList = DatabaseHelper.getInstance(context).getAll();
         for (final Plan plan : planList) {
             String dest = plan.getLocation();
             new DirectionTask() {
@@ -86,7 +87,7 @@ public class DistanceManager {
                         TimeUtil.toDate(startTime) + ". You are now " +
                         travelTime / 1000.0d / 60 + " minutes away from there")
                 .setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setWhen(System.currentTimeMillis())
                 .setOngoing(true);
         Notification mNotification = builder.build();

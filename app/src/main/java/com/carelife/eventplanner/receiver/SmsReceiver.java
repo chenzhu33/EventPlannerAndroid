@@ -10,6 +10,7 @@ import android.telephony.SmsMessage;
 import android.view.WindowManager;
 
 import com.carelife.eventplanner.R;
+import com.carelife.eventplanner.db.DatabaseHelper;
 import com.carelife.eventplanner.dom.Plan;
 
 /**
@@ -36,11 +37,11 @@ public class SmsReceiver extends BroadcastReceiver {
         }
     }
 
-    public boolean showDialog(Context context, final String messageBody) {
+    public boolean showDialog(final Context context, final String messageBody) {
         alertDialog = new AlertDialog.Builder(context).
                 setTitle(context.getResources().getString(R.string.tips_confirm_accept_title)).
                 setMessage(context.getResources().getString(R.string.tips_confirm_accept_plan)).
-                setIcon(R.drawable.ic_launcher).
+                setIcon(R.mipmap.ic_launcher).
                 setPositiveButton(context.getResources().getString(R.string.tips_confirm_accept_ok), new DialogInterface.OnClickListener() {
 
                     @Override
@@ -54,7 +55,7 @@ public class SmsReceiver extends BroadcastReceiver {
                         plan.setStartDate(Long.parseLong(planInfo[3]));
                         plan.setEndDate(Long.parseLong(planInfo[4]));
                         plan.setNote(planInfo[5]);
-                        plan.save();
+                        DatabaseHelper.getInstance(context).insertOrUpdate(plan);
                         alertDialog.dismiss();
                     }
                 }).

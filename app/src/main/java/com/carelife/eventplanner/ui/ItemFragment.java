@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.carelife.eventplanner.R;
+import com.carelife.eventplanner.db.DatabaseHelper;
 import com.carelife.eventplanner.dom.Plan;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
     public void onResume() {
         super.onResume();
         planList.clear();
-        planList.addAll(Plan.listAll(Plan.class));
+        planList.addAll(DatabaseHelper.getInstance(getActivity()).getAll());
 
         if(sortByTime) {
             Collections.sort(planList, new Comparator<Plan>() {
@@ -74,7 +75,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent i = new Intent(this.getActivity(),PlanDetailActivity.class);
-        i.putExtra("PlanId",planList.get(position).getId());
+        i.putExtra("PlanId",planList.get(position).get_id());
         startActivity(i);
     }
 
@@ -83,12 +84,12 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         alertDialog = new AlertDialog.Builder(getActivity()).
                 setTitle(getResources().getString(R.string.tips_confirm_delete_title)).
                 setMessage(getResources().getString(R.string.tips_confirm_delete_plan)).
-                setIcon(R.drawable.ic_launcher).
+                setIcon(R.mipmap.ic_launcher).
                 setPositiveButton(getResources().getString(R.string.tips_confirm_ok), new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        planList.get(position).delete();
+                        DatabaseHelper.getInstance(getActivity()).delete(planList.get(position).get_id());
                         planList.remove(position);
                         mAdapter.notifyDataSetChanged();
                         alertDialog.dismiss();

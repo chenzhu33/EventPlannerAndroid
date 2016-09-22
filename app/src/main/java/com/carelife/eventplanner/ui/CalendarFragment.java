@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.carelife.eventplanner.R;
+import com.carelife.eventplanner.db.DatabaseHelper;
 import com.carelife.eventplanner.dom.Plan;
 import com.carelife.eventplanner.utils.TimeUtil;
 
@@ -42,7 +43,7 @@ public class CalendarFragment extends Fragment {
     public void onResume() {
         super.onResume();
         planList.clear();
-        planList.addAll(Plan.listAll(Plan.class));
+        planList.addAll(DatabaseHelper.getInstance(getActivity()).getAll());
         if(sortByTime) {
             Collections.sort(planList, new Comparator<Plan>() {
                 @Override
@@ -120,13 +121,13 @@ public class CalendarFragment extends Fragment {
         alertDialog = new AlertDialog.Builder(getActivity()).
                 setTitle(plan.title).
                 setMessage(plan.venue+"\n"+plan.location+"\n"+TimeUtil.toDate(plan.startDate)+" -- "+TimeUtil.toDate(plan.endDate)).
-                setIcon(R.drawable.ic_launcher).
+                setIcon(R.mipmap.ic_launcher).
                 setPositiveButton(getResources().getString(R.string.tips_confirm_info_detail), new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Intent i = new Intent(getActivity(),PlanDetailActivity.class);
-                        i.putExtra("PlanId",plan.getId());
+                        i.putExtra("PlanId",plan.get_id());
                         startActivity(i);
                         alertDialog.dismiss();
                     }
@@ -135,7 +136,7 @@ public class CalendarFragment extends Fragment {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        plan.delete();
+                        DatabaseHelper.getInstance(getActivity()).delete(plan.get_id());
                         planList.remove(plan);
                         mAdapter.notifyDataSetChanged();
                         alertDialog.dismiss();
